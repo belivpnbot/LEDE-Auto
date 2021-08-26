@@ -1,9 +1,21 @@
 #!/bin/bash
 
-rm -rf ./package/boot/uboot-rockchip target/linux/rockchip
+shopt -s extglob
+rm -rf package/boot/uboot-rockchip
+svn export --force https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/package/boot/uboot-rockchip package/boot/uboot-rockchip
+svn export --force https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/package/boot/arm-trusted-firmware-rockchip-vendor package/boot/arm-trusted-firmware-rockchip-vendor
+rm -rf target/linux/rockchip/!(patches-5.4)
 svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/target/linux/rockchip target/linux/rockchip
-svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/package/boot/uboot-rockchip package/boot/uboot-rockchip
-svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/package/boot/arm-trusted-firmware-rk3328 package/boot/arm-trusted-firmware-rk3328
+rm -rf target/linux/rockchip/{.svn,patches-5.4/.svn}
+svn co https://github.com/immortalwrt/immortalwrt/branches/openwrt-21.02/target/linux/rockchip/patches-5.4 target/linux/rockchip/patches-5.4
+
+curl -L https://git.io/J0klE -o package/kernel/linux/modules/video.mk
+
+mkdir -p files/etc/rc.d
+curl -L https://git.io/J0kc3 --create-dirs -o files/usr/bin/start-rk3328-pwm-fan.sh
+curl -L https://git.io/J0kW8 --create-dirs -o files/etc/init.d/fa-rk3328-pwmfan
+chmod +x files/usr/bin/start-rk3328-pwm-fan.sh files/etc/init.d/fa-rk3328-pwmfan
+ln -sf /etc/init.d/fa-rk3328-pwmfan files/etc/rc.d/S96fa-rk3328-pwmfan
 
 sed -i 's,-mcpu=generic,-march=armv8-a+crypto+crc -mabi=lp64,g' include/target.mk
 
@@ -35,6 +47,6 @@ CONFIG_REALTEK_PHY=y
 CONFIG_CPU_FREQ_GOV_USERSPACE=y
 CONFIG_CPU_FREQ_GOV_ONDEMAND=y
 CONFIG_CPU_FREQ_GOV_CONSERVATIVE=y
-' >> ./target/linux/rockchip/armv8/config-5.4
+' >> ./target/linux/rockchip/armv8/config-5.10
 
 
