@@ -222,7 +222,7 @@ jobs:
         rand=$[$RANDOM % ${#Emoji[@]}]
         echo "EMOJI=${Emoji[$rand]}" >> $GITHUB_ENV
         if [ ${{matrix.target}} == "phicomm-k2p" ]; then
-        echo "NOTICE=刷机时breed里的闪存布局请选择斐讯而非默认的公版" >> $GITHUB_ENV
+        echo "NOTICE=刷机时breed里闪存布局请选择斐讯而非默认的公版" >> $GITHUB_ENV
         elif [ ${{matrix.target}} == "x86_64" ]; then
         echo "NOTICE=请分配不少于800M的存储容量" >> $GITHUB_ENV
         fi
